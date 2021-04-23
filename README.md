@@ -18,7 +18,10 @@ Write code that implements mastermind with N positions and M colours (encoded by
 
 In a game, the computer generates a random secret according to the chosen values of N and M, and then iteratively asks the user for guesses. A guess would be evaluated and the results printed, i.e., the number of correct positions "black", and number of additional correct 'colours' "white". The program would recognise if the secret code has been correctly identified, print a message, and start gain.
 
+Add a "history" to the code that stores the guesses in each step as a queue and prints them out at the beginning of each step for inspection and at the end of the game if the secret code has been broken.
+
 ## The Rules
 
 - Must submit a single file
 - Can not use any prebuilt data structues besides arrays
+- User has unlimited tries to guess the code
