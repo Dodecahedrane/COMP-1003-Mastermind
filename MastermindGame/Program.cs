@@ -15,6 +15,7 @@ namespace COMP1003_Mastermind_Console_Game
             while (!validParams)
             {
                 //prints error if user input is invalid and method is recursivly called
+                //ERROR Fix recurise errors when user input it invalid
                 if (error != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
