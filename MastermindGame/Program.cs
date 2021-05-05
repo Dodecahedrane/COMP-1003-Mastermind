@@ -9,68 +9,102 @@ namespace COMP1003_Mastermind_Console_Game
         public int[] CodeToGuess { get; set; }      //The code the user has to guess
         public bool Debug { get; set; }             //does user want the debug info
 
-        public void SetUpGame(string error = null)
+        private string numStr;
+        private string possStr;
+        private string debugInput;
+
+        public void SetUpGame()
         {
             bool validParams = false;
             while (!validParams)
             {
-                //prints error if user input is invalid and method is recursivly called
-                //ERROR Fix recurise errors when user input it invalid
-                if (error != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please Try Again.");
-                    Console.WriteLine("Error: ");
-                    Console.WriteLine(error);
-                    Console.WriteLine(Environment.NewLine);
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
+                SetParameters();    //asks user for game parameters
+                string error = ValidateParameters();
 
-                Console.WriteLine("How many positions do you want to guess? Any positive numerical value.");
-                string possStr = Console.ReadLine();
-                Console.WriteLine("How many numbers do you want to guess? Between 1 and 9.");
-                string numStr = Console.ReadLine();
-                try
+                if(error == null)
                 {
-                    Positions = Int32.Parse(possStr);
-                    
-                }
-                catch (FormatException)
-                {
-                    SetUpGame("'Positions To Guess' must be a numerical value");
-                }
-                try
-                {
-                    Numbers = Int32.Parse(numStr);
-                }
-                catch (FormatException)
-                {
-                    SetUpGame("'Numbers To Guess' must be a numerical value");
-                }
-                if (Numbers < 1 | Numbers > 9)
-                {
-                    SetUpGame("'Numbers To Guess' must be between 1 and 9");
-                }
-                if (Positions < 1)
-                {
-                    SetUpGame("'Possitions To Guess' must be above 0");
-                }
-                validParams = true; //if it gets this far then params are valid, break out of loop
-                Console.WriteLine("Do you want debug mode? Y/N");
-                string debugInput = Console.ReadLine();
-                if(debugInput.ToLower() == "y")
-                {
-                    Debug = true;
+                    validParams = true;
                 }
                 else
                 {
-                    //if user puts anything other than Y then assume false.
-                    Debug = false;
+                    PrintError(error);
                 }
             }
 
             //set up random code for user to guess
             CodeToGuess = GenerateRandomCodeToGuess();
+        }
+
+        private void SetParameters()
+        {
+            Console.WriteLine("How many positions do you want to guess? Any positive numerical value.");
+            possStr = Console.ReadLine();
+            Console.WriteLine("How many numbers do you want to guess? Between 1 and 9.");
+            numStr = Console.ReadLine();
+            Console.WriteLine("Do you want debug mode? Y/N");
+            debugInput = Console.ReadLine();
+        }
+
+        private string ValidateParameters()
+        {
+            try
+            {
+                Positions = Int32.Parse(possStr);
+            }
+            catch (FormatException)
+            {
+                return "'Positions To Guess' must be a numerical value";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+            try
+            {
+                Numbers = Int32.Parse(numStr);
+            }
+            catch (FormatException)
+            {
+                return "'Numbers To Guess' must be a numerical value";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
+            if (Numbers < 1 | Numbers > 9)
+            {
+                return "'Numbers To Guess' must be between 1 and 9";
+            }
+            if (Positions < 1)
+            {
+                return "'Possitions To Guess' must be above 0";
+            }
+
+
+            if (debugInput.ToLower() == "y")
+            {
+                Debug = true;
+            }
+            else
+            {
+                //if user puts anything other than Y then assume false.
+                Debug = false;
+            }
+
+
+            return null; //if null then all input is valid
+        }
+
+        private void PrintError(string errorToPrint)
+        {
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Please Try Again.");
+            Console.WriteLine($"Error: {errorToPrint}");
+            Console.WriteLine(Environment.NewLine);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         private int[] GenerateRandomCodeToGuess()
