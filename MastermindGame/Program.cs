@@ -122,6 +122,12 @@ namespace COMP1003_Mastermind_Console_Game
 
     class HistoryStack
     {
+        class TurnModel
+        {
+            public int[] Guess { get; set; }
+            public string GuessValidity { get; set; }
+        }
+
         public int Turn { get; set; }
 
         public void HistorySetUp(int Positions)
@@ -129,7 +135,7 @@ namespace COMP1003_Mastermind_Console_Game
             Turn = 1;
         }
 
-        public void PushToStack()
+        public void PushToStack(int[] guessToPush)
         {
 
         }
@@ -147,22 +153,34 @@ namespace COMP1003_Mastermind_Console_Game
 
     class PlayerGuess
     {
-        int[] Guess { get; set; }   //the players last guess
-
+        public int[] Guess { get; set; }   //the players last guess
+        private int Positions { get; set; }
 
         public void SetUpPlayerGuess(int positions)
         {
             Guess = new int[positions];
-        }
-
-        public void SetGuess(int[] guess)
-        {
-            Guess = guess;
+            Positions = positions;
         }
 
         public bool IsGuessValid(int[] currentCode)
         {
-            if(Guess == currentCode)
+            string guessStr = "";
+            string currentCodeStr = "";
+
+            for (int i = 0; i < Positions; i++ )
+            {
+                try
+                {
+                    guessStr = guessStr + Guess[i].ToString();
+                    currentCodeStr = currentCodeStr + currentCode[i].ToString();
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            if (guessStr == currentCodeStr)
             {
                 return true;
             }
@@ -183,12 +201,6 @@ namespace COMP1003_Mastermind_Console_Game
         private static PlayerGuess pg = new PlayerGuess();
 
 
-
-        static void GetPlayerGuess()
-        {
-
-        }
-
         static string ReturnCode(int[] code, int len)
         {
             string s = "";
@@ -199,16 +211,75 @@ namespace COMP1003_Mastermind_Console_Game
             return s;
         }
         
+        //returns length of string inputted
+        static int StringLength(string strToCheck)
+        {
+            int i = 0;
+            while (true)
+            {
+                try
+                {
+                    _ = strToCheck[i];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    return i;
+                }
+                i++;
+            }
+        }
+
+        static int[] GetPlayersGuess()
+        {
+            //validate guess
+            Console.WriteLine("Please Now Make A Guess...");
+            string guess = Console.ReadLine();
+            int[] guessArr = new int[gp.Positions];
+            if(StringLength(guess) != gp.Positions)
+            {
+                return null;
+            }
+            else
+            {
+                for(int i = 0; i < gp.Positions; i++)
+                {
+                    try
+                    {
+                        guessArr[i] = Int32.Parse(guess[i].ToString());
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
+            return guessArr;
+        }
+
         static void PrintHistory()
         {
+            //TODO History Print
+            Console.WriteLine("Here are your previous guesses:");
+        }
 
+        static void PrintDebug()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Debug is: {gp.Debug}");
+            Console.WriteLine($"Positions are: {gp.Positions}");
+            Console.WriteLine($"Numbers are: {gp.Numbers}");
+            Console.WriteLine($"Code To Guess is: {ReturnCode(gp.CodeToGuess, gp.Positions)}");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         static void RunGame(string error = null)
         {
             Console.Clear();
-
-            if(error != null)
+            if (gp.Debug)
+            {
+                PrintDebug();
+            }
+            if (error != null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Error, please try again");
@@ -219,10 +290,25 @@ namespace COMP1003_Mastermind_Console_Game
             Console.WriteLine($"You Are On Turn {hs.Turn}");
 
             //print history
-            //ask for guess
-            //validate and check guess
-            //add to history
+            PrintHistory();
 
+            //ask for guess
+            pg.Guess = GetPlayersGuess();
+            while(pg.Guess == null)
+            {
+                string example = "";
+                for(int i = 1; i <= gp.Positions; i++) { example = example + i.ToString(); }    //generates example of required input that is the correct length
+                Console.WriteLine($"That is not a valid guess. Must be all numbers, with no spaces. Such as '{example}'. Must be the same length as {gp.Positions}");
+                pg.Guess = GetPlayersGuess();
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine(pg.IsGuessValid(gp.CodeToGuess));
+            Console.ReadLine();
+
+
+            //add to history
+            hs.PushToStack(pg.Guess);
         }
 
 
@@ -235,12 +321,7 @@ namespace COMP1003_Mastermind_Console_Game
 
             if (gp.Debug)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Debug is: {gp.Debug}");
-                Console.WriteLine($"Positions are: {gp.Positions}");
-                Console.WriteLine($"Numbers are: {gp.Numbers}");
-                Console.WriteLine($"Code To Guess is: {ReturnCode(gp.CodeToGuess, gp.Positions)}");
-                Console.ForegroundColor = ConsoleColor.White;
+                PrintDebug();
             }
             Console.WriteLine("Click To Start Game");
             Console.ReadLine();
@@ -248,6 +329,7 @@ namespace COMP1003_Mastermind_Console_Game
 
             while (!pg.IsGuessValid(gp.CodeToGuess))
             {
+                
                 RunGame();
 
             }
@@ -258,6 +340,12 @@ namespace COMP1003_Mastermind_Console_Game
                 Console.WriteLine($"The Code Was: {ReturnCode(gp.CodeToGuess, gp.Positions)}");
                 PrintHistory();
                 Console.ForegroundColor = ConsoleColor.White;
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("Unknown Error Has Occured");
+                Console.ReadLine();
             }
         }
     }
