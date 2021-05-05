@@ -122,22 +122,26 @@ namespace COMP1003_Mastermind_Console_Game
 
     class HistoryStack
     {
-        class TurnModel
+        public class TurnModel
         {
             public int[] Guess { get; set; }
             public string GuessValidity { get; set; }
         }
 
         public int Turn { get; set; }
+        public TurnModel[] Stack { get; set;}
 
         public void HistorySetUp(int Positions)
         {
             Turn = 1;
+            Stack = new TurnModel[1];
         }
 
-        public void PushToStack(int[] guessToPush)
+        public void PushToStack(TurnModel turn)
         {
-
+            Stack[Turn] = turn;
+            IncrementStackByOne();
+            Turn++;
         }
 
         public void ClearStack()
@@ -148,6 +152,17 @@ namespace COMP1003_Mastermind_Console_Game
         public void PrintHistory()
         {
             
+        }
+
+        private void IncrementStackByOne()
+        {
+            //make Stack property one index larger, while keeping all contents the same
+            TurnModel[] tempStack = Stack;
+            Stack = new TurnModel[Turn + 1];
+            for (int i = 0; i < Turn; i++)
+            {
+                Stack[i] = tempStack[i];
+            }
         }
     }
 
@@ -188,6 +203,17 @@ namespace COMP1003_Mastermind_Console_Game
             {
                 return false;
             }
+        }
+
+        public string HowCorrectIsTheGuess(int[] currentCode)
+        {
+            //Returns:
+            //3/6 Are the correct numbers, 1/6 Are in the correct possition
+
+            
+
+
+            throw new NotImplementedException();
         }
     }
 
@@ -302,13 +328,15 @@ namespace COMP1003_Mastermind_Console_Game
                 pg.Guess = GetPlayersGuess();
             }
 
-            Console.WriteLine("");
-            Console.WriteLine(pg.IsGuessValid(gp.CodeToGuess));
-            Console.ReadLine();
-
+            //show guess validity
+            string guessValidity = pg.HowCorrectIsTheGuess(gp.CodeToGuess);
+            Console.WriteLine(guessValidity);
 
             //add to history
-            hs.PushToStack(pg.Guess);
+            HistoryStack.TurnModel turn = new HistoryStack.TurnModel();
+            turn.Guess = pg.Guess;
+            turn.GuessValidity = guessValidity;    //TODO add how valid is guess
+            hs.PushToStack(turn);
         }
 
 
