@@ -8,6 +8,8 @@ namespace COMP1003_Mastermind_Console_Game
         public int Numbers { get; set; }  //numbers (aka colors) to guess  
         public int[] CodeToGuess { get; set; }      //The code the user has to guess
         public bool Debug { get; set; }             //does user want the debug info
+        public int[] NumbersInCodeNoRepetes { get; set; }       //Array holds every number in CodeToGuess, with no repetes, IntMaxValue for empty index that should be ignored
+
 
         private string numStr;
         private string possStr;
@@ -33,6 +35,9 @@ namespace COMP1003_Mastermind_Console_Game
 
             //set up random code for user to guess
             CodeToGuess = GenerateRandomCodeToGuess();
+
+            //Set up NumberInCodeNoRepetes
+            GetNumbersInCode(CodeToGuess);
         }
 
         private void SetParameters()
@@ -118,6 +123,37 @@ namespace COMP1003_Mastermind_Console_Game
             }
             return code;
         }
+
+        private void GetNumbersInCode(int[] code)
+        {
+            NumbersInCodeNoRepetes = new int[Positions];
+
+            for(int i =0; i < Positions; i++)
+            {
+                if(!IsNumberInArray(NumbersInCodeNoRepetes, Positions, code[i]))
+                {
+                    //number not in NumbersInCodeNoRepetes array
+                    //Add to array
+                    NumbersInCodeNoRepetes[i] = code[i];
+                }
+                else
+                {
+                    NumbersInCodeNoRepetes[i] = int.MaxValue;
+                }
+            }
+        }
+
+        private bool IsNumberInArray(int[] arr, int arrLen, int num)
+        {
+            for(int i = 0; i < arrLen; i++)
+            {
+                if(arr[i] == num)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     class HistoryStack
@@ -149,13 +185,9 @@ namespace COMP1003_Mastermind_Console_Game
 
         }
 
-        public void PrintHistory()
-        {
-            
-        }
-
         private void IncrementStackByOne()
         {
+            //ERROR OutOfRange Exception
             //make Stack property one index larger, while keeping all contents the same
             TurnModel[] tempStack = Stack;
             Stack = new TurnModel[Turn + 1];
@@ -205,15 +237,43 @@ namespace COMP1003_Mastermind_Console_Game
             }
         }
 
-        public string HowCorrectIsTheGuess(int[] currentCode)
+        public string HowCorrectIsTheGuess(int[] guessCode, int[] correctCode, int[] numbersInCodeNoRepetes, int indexs)
         {
+            int correctNumbers = 0;
+            int correctPositions = 0;
             //Returns:
             //3/6 Are the correct numbers, 1/6 Are in the correct possition
 
-            
+            //check how many numbers are in the code correctly
+            for(int i = 0; i < indexs; i++)
+            {
+                for (int j = 0; j < indexs; j++)
+                {
+                    
+                    if(numbersInCodeNoRepetes[i] == guessCode[j])
+                    {
+                        correctNumbers++;
+                    }
+                }
+            }
+
+            //check how many positions and numbers are correct
+            for (int i = 0; i < indexs; i++)
+            {
+                for (int j = 0; j < indexs; j++)
+                {
+
+                    if (numbersInCodeNoRepetes[i] == correctCode[j])
+                    {
+                        correctPositions++;
+                    }
+                }
+            }
 
 
-            throw new NotImplementedException();
+            string returnString = $"{correctNumbers}/{indexs} Are the correct numbers, {correctPositions}/{indexs} Are in the correct possition";
+
+            return returnString;
         }
     }
 
@@ -329,7 +389,7 @@ namespace COMP1003_Mastermind_Console_Game
             }
 
             //show guess validity
-            string guessValidity = pg.HowCorrectIsTheGuess(gp.CodeToGuess);
+            string guessValidity = pg.HowCorrectIsTheGuess(pg.Guess, gp.CodeToGuess, gp.NumbersInCodeNoRepetes, gp.Positions);
             Console.WriteLine(guessValidity);
 
             //add to history
