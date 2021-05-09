@@ -16,7 +16,7 @@ There are versions of mastermind with more or less positions than four, and more
 
 Write code that implements mastermind with N positions and M colours (encoded by numbers from 1 to M). N and M should be parameters of the code; the code should work for any positive choice of N and M (up to a maximum value of M=9). The code should take the role of player A in the description above, such that the user has to guess a secret code (role B); ask the user for N and M at the beginning; and then enter a main loop that iteratively starts new games until the user indicates an exit-condition (the code may ask the user if he wants to play again).
 
-In a game, the computer generates a random secret according to the chosen values of N and M, and then iteratively asks the user for guesses. A guess would be evaluated and the results printed, i.e., the number of correct positions "black", and number of additional correct 'colours' "white". The program would recognise if the secret code has been correctly identified, print a message, and start gain.
+In a game, the computer generates a random secret according to the chosen values of N and M, and then iteratively asks the user for guesses. A guess would be evaluated and the results printed, i.e., the number of correct positions "black", and number of additional correct 'colours' "white". The program would recognise if the secret code has been correctly identified, print a message, and start again.
 
 Add a "history" to the code that stores the guesses in each step as a queue and prints them out at the beginning of each step for inspection and at the end of the game if the secret code has been broken.
 
