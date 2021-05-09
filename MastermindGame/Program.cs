@@ -403,42 +403,68 @@ namespace COMP1003_Mastermind_Console_Game
             hs.PushToStack(turn);
         }
 
-
-        static void Main(string[] args)
+        static void SetUpGame()
         {
+            Console.Clear();
             Console.WriteLine("COMP 1003 Mastermind");
+            Console.WriteLine("Please Set Up Your Game");
             gp.SetUpGame();
             hs.HistorySetUp(gp.Positions);
             pg.SetUpPlayerGuess(gp.Positions);
 
-            if (gp.Debug)
-            {
-                PrintDebug();
-            }
-            Console.WriteLine("Click To Start Game");
-            Console.ReadLine();
+        }
 
 
-            while (!pg.IsGuessValid(gp.CodeToGuess))
+        static void Main(string[] args)
+        {
+            while (true)
             {
                 
-                RunGame();
+                SetUpGame();
 
-            }
-            if (pg.IsGuessValid(gp.CodeToGuess))
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("You Have Won!!!");
-                Console.WriteLine($"The Code Was: {ReturnCode(gp.CodeToGuess, gp.Positions)}");
-                PrintHistory();
-                Console.ForegroundColor = ConsoleColor.White;
+                if (gp.Debug)
+                {
+                    PrintDebug();
+                }
+                Console.WriteLine("Click To Start Game");
                 Console.ReadLine();
+
+
+                while (!pg.IsGuessValid(gp.CodeToGuess))
+                {
+
+                    RunGame();
+
+                }
+                if (pg.IsGuessValid(gp.CodeToGuess))
+                {
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("You Have Won!!!");
+                    Console.WriteLine($"The Code Was: {ReturnCode(gp.CodeToGuess, gp.Positions)}");
+                    PrintHistory();
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("Press 'g' To Play Again");
+                    Console.WriteLine("Press any other key to quit");
+                    
+                    char s = Console.ReadKey().KeyChar;
+                    if(s == 'g')
+                    {
+                        SetUpGame();
+                    }
+                    else
+                    {
+                        Console.WriteLine("You Have Quit The Game");
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unknown Error Has Occured");
+                    Console.ReadLine();
+                }
             }
-            else
-            {
-                Console.WriteLine("Unknown Error Has Occured");
-                Console.ReadLine();
-            }
+            
         }
     }
 }
