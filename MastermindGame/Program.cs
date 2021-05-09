@@ -175,26 +175,17 @@ namespace COMP1003_Mastermind_Console_Game
 
         public void PushToStack(TurnModel turn)
         {
-            Stack[Turn] = turn;
-            IncrementStackByOne();
-            Turn++;
-        }
-
-        public void ClearStack()
-        {
-
-        }
-
-        private void IncrementStackByOne()
-        {
-            //ERROR OutOfRange Exception
             //make Stack property one index larger, while keeping all contents the same
-            TurnModel[] tempStack = Stack;
+            TurnModel[] tempStack = new TurnModel[Turn];
+            tempStack = Stack;
             Stack = new TurnModel[Turn + 1];
             for (int i = 0; i < Turn; i++)
             {
                 Stack[i] = tempStack[i];
             }
+
+            Stack[Turn-1] = turn;
+            Turn++;
         }
     }
 
@@ -257,17 +248,17 @@ namespace COMP1003_Mastermind_Console_Game
                 }
             }
 
+            //ERROR
             //check how many positions and numbers are correct
             for (int i = 0; i < indexs; i++)
             {
-                for (int j = 0; j < indexs; j++)
-                {
+                
 
-                    if (numbersInCodeNoRepetes[i] == correctCode[j])
-                    {
-                        correctPositions++;
-                    }
+                if (correctCode[i] == guessCode[i])
+                {
+                    correctPositions++;
                 }
+                
             }
 
 
@@ -344,8 +335,21 @@ namespace COMP1003_Mastermind_Console_Game
 
         static void PrintHistory()
         {
-            //TODO History Print
-            Console.WriteLine("Here are your previous guesses:");
+            //Do Not Print History On First Turn
+            //Because there is no history to print
+            if(hs.Turn > 1)
+            {
+                Console.WriteLine("Here are your previous guesses:");
+                for (int i = 0; i < hs.Turn -1; i++)
+                {
+                    string guess = "";
+                    for (int j = 0; j <= gp.Positions-1; j++) { guess = guess + hs.Stack[i].Guess[j]; }
+
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine($"Guess:  {guess} Validity: {hs.Stack[i].GuessValidity}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
         }
 
         static void PrintDebug()
@@ -384,7 +388,7 @@ namespace COMP1003_Mastermind_Console_Game
             {
                 string example = "";
                 for(int i = 1; i <= gp.Positions; i++) { example = example + i.ToString(); }    //generates example of required input that is the correct length
-                Console.WriteLine($"That is not a valid guess. Must be all numbers, with no spaces. Such as '{example}'. Must be the same length as {gp.Positions}");
+                Console.WriteLine($"That is not a valid guess. Must be all numbers, with no spaces. Such as '{example}'. Must be {gp.Positions} long.");
                 pg.Guess = GetPlayersGuess();
             }
 
