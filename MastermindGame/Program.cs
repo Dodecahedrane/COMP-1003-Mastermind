@@ -268,9 +268,6 @@ namespace COMP1003_Mastermind_Console_Game
         }
     }
 
-
-
-
     class Program
     {
         private static GameParameters gp = new GameParameters();
@@ -413,7 +410,6 @@ namespace COMP1003_Mastermind_Console_Game
             pg.SetUpPlayerGuess(gp.Positions);
 
         }
-
 
         static void Main(string[] args)
         {
