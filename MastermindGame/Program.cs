@@ -262,7 +262,7 @@ namespace COMP1003_Mastermind_Console_Game
             }
 
 
-            string returnString = $"{correctNumbers}/{indexs} Are the correct numbers, {correctPositions}/{indexs} Are in the correct possition";
+            string returnString = $"{correctNumbers}/{indexs} Are the correct numbers, {correctPositions}/{indexs} Are in the correct position";
 
             return returnString;
         }
@@ -362,17 +362,9 @@ namespace COMP1003_Mastermind_Console_Game
         static void RunGame(string error = null)
         {
             Console.Clear();
-            if (gp.Debug)
-            {
-                PrintDebug();
-            }
-            if (error != null)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Error, please try again");
-                Console.WriteLine(error);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+
+            //Excluded From Structogram
+            if (gp.Debug) { PrintDebug(); }
 
             Console.WriteLine($"You Are On Turn {hs.Turn}");
 
@@ -384,7 +376,7 @@ namespace COMP1003_Mastermind_Console_Game
             while(pg.Guess == null)
             {
                 string example = "";
-                for(int i = 1; i <= gp.Positions; i++) { example = example + i.ToString(); }    //generates example of required input that is the correct length
+                for(int i = 1; i <= gp.Positions; i++) { example = example + i.ToString(); }    //generates example of required input that is the correct length (excluded from structogram)
                 Console.WriteLine($"That is not a valid guess. Must be all numbers, with no spaces. Such as '{example}'. Must be {gp.Positions} long.");
                 pg.Guess = GetPlayersGuess();
             }
@@ -396,7 +388,7 @@ namespace COMP1003_Mastermind_Console_Game
             //add to history
             HistoryStack.TurnModel turn = new HistoryStack.TurnModel();
             turn.Guess = pg.Guess;
-            turn.GuessValidity = guessValidity;    //TODO add how valid is guess
+            turn.GuessValidity = guessValidity;
             hs.PushToStack(turn);
         }
 
@@ -418,19 +410,17 @@ namespace COMP1003_Mastermind_Console_Game
                 
                 SetUpGame();
 
-                if (gp.Debug)
-                {
-                    PrintDebug();
-                }
+                //excluded from structogram
+                if (gp.Debug) { PrintDebug(); }
+                
+
                 Console.WriteLine("Click To Start Game");
                 Console.ReadLine();
 
 
                 while (!pg.IsGuessValid(gp.CodeToGuess))
                 {
-
                     RunGame();
-
                 }
                 if (pg.IsGuessValid(gp.CodeToGuess))
                 {
