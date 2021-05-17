@@ -18,6 +18,8 @@ namespace COMP1003_Mastermind_Console_Game
         public void SetUpGame()
         {
             bool validParams = false;
+
+            //keeps asking for parameters until user gives valid parameters
             while (!validParams)
             {
                 SetParameters();    //asks user for game parameters
@@ -52,6 +54,7 @@ namespace COMP1003_Mastermind_Console_Game
 
         private string ValidateParameters()
         {
+            //checks position parameter input
             try
             {
                 Positions = Int32.Parse(possStr);
@@ -65,6 +68,7 @@ namespace COMP1003_Mastermind_Console_Game
                 return ex.ToString();
             }
 
+            //checks numbers (colors) parameters input
             try
             {
                 Numbers = Int32.Parse(numStr);
@@ -78,6 +82,7 @@ namespace COMP1003_Mastermind_Console_Game
                 return ex.ToString();
             }
 
+            //checks the paramets are in the correct ranges
             if (Numbers < 1 | Numbers > 9)
             {
                 return "'Numbers To Guess' must be between 1 and 9";
@@ -87,7 +92,7 @@ namespace COMP1003_Mastermind_Console_Game
                 return "'Possitions To Guess' must be above 0";
             }
 
-
+            //sets up debug
             if (debugInput.ToLower() == "y")
             {
                 Debug = true;
@@ -116,7 +121,6 @@ namespace COMP1003_Mastermind_Console_Game
         {
             int[] code = new int[Positions];
             Random rand = new Random();
-            int[] CodeToGuess = new int[Positions];
             for(int i = 0; i < Positions; i++)
             {
                 code[i] = rand.Next(1,Numbers);
@@ -126,6 +130,9 @@ namespace COMP1003_Mastermind_Console_Game
 
         private void GetNumbersInCode(int[] code)
         {
+            //creates an array that contains all the numbers in the code within no repets, insets int.MaxValue in output where a number has been repeted
+            //eg [1, 6, 4, 6, 2, 1] becomes [1, 6, 4, Int.MaxValue, 2, Int.MaxValue]
+
             NumbersInCodeNoRepetes = new int[Positions];
 
             for(int i =0; i < Positions; i++)
@@ -143,6 +150,7 @@ namespace COMP1003_Mastermind_Console_Game
             }
         }
 
+        //returns true if the number is in the array, false if not
         private bool IsNumberInArray(int[] arr, int arrLen, int num)
         {
             for(int i = 0; i < arrLen; i++)
@@ -158,6 +166,7 @@ namespace COMP1003_Mastermind_Console_Game
 
     class HistoryStack
     {
+        //Model for each turn, stores the code and the GuessValidity (eg 2/4 numbers correct and 1/4 positions correct)
         public class TurnModel
         {
             public int[] Guess { get; set; }
@@ -167,7 +176,7 @@ namespace COMP1003_Mastermind_Console_Game
         public int Turn { get; set; }
         public TurnModel[] Stack { get; set;}
 
-        public void HistorySetUp(int Positions)
+        public void HistorySetUp()
         {
             Turn = 1;
             Stack = new TurnModel[1];
@@ -176,8 +185,7 @@ namespace COMP1003_Mastermind_Console_Game
         public void PushToStack(TurnModel turn)
         {
             //make Stack property one index larger, while keeping all contents the same
-            TurnModel[] tempStack = new TurnModel[Turn];
-            tempStack = Stack;
+            TurnModel[] tempStack = Stack;
             Stack = new TurnModel[Turn + 1];
             for (int i = 0; i < Turn; i++)
             {
@@ -192,7 +200,7 @@ namespace COMP1003_Mastermind_Console_Game
     class PlayerGuess
     {
         public int[] Guess { get; set; }   //the players last guess
-        private int Positions { get; set; }
+        private int Positions { get; set; } //length of Guess array
 
         public void SetUpPlayerGuess(int positions)
         {
@@ -209,8 +217,8 @@ namespace COMP1003_Mastermind_Console_Game
             {
                 try
                 {
-                    guessStr = guessStr + Guess[i].ToString();
-                    currentCodeStr = currentCodeStr + currentCode[i].ToString();
+                    guessStr += Guess[i].ToString();
+                    currentCodeStr += currentCode[i].ToString();
                 }
                 catch
                 {
@@ -280,7 +288,7 @@ namespace COMP1003_Mastermind_Console_Game
             string s = "";
             for (int i = 0; i < len; i++)
             {
-                s = s + code[i];
+                s += code[i];
             }
             return s;
         }
@@ -340,7 +348,7 @@ namespace COMP1003_Mastermind_Console_Game
                 for (int i = 0; i < hs.Turn -1; i++)
                 {
                     string guess = "";
-                    for (int j = 0; j <= gp.Positions-1; j++) { guess = guess + hs.Stack[i].Guess[j]; }
+                    for (int j = 0; j <= gp.Positions-1; j++) { guess += hs.Stack[i].Guess[j]; }
 
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Guess:  {guess} Validity: {hs.Stack[i].GuessValidity}");
@@ -359,7 +367,7 @@ namespace COMP1003_Mastermind_Console_Game
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        static void RunGame(string error = null)
+        static void RunGame()
         {
             Console.Clear();
 
@@ -376,7 +384,7 @@ namespace COMP1003_Mastermind_Console_Game
             while(pg.Guess == null)
             {
                 string example = "";
-                for(int i = 1; i <= gp.Positions; i++) { example = example + i.ToString(); }    //generates example of required input that is the correct length (excluded from structogram)
+                for(int i = 1; i <= gp.Positions; i++) { example += i.ToString(); }    //generates example of required input that is the correct length (excluded from structogram)
                 Console.WriteLine($"That is not a valid guess. Must be all numbers, with no spaces. Such as '{example}'. Must be {gp.Positions} long.");
                 pg.Guess = GetPlayersGuess();
             }
@@ -386,9 +394,11 @@ namespace COMP1003_Mastermind_Console_Game
             Console.WriteLine(guessValidity);
 
             //add to history
-            HistoryStack.TurnModel turn = new HistoryStack.TurnModel();
-            turn.Guess = pg.Guess;
-            turn.GuessValidity = guessValidity;
+            HistoryStack.TurnModel turn = new HistoryStack.TurnModel
+            {
+                Guess = pg.Guess,
+                GuessValidity = guessValidity
+            };
             hs.PushToStack(turn);
         }
 
@@ -398,7 +408,7 @@ namespace COMP1003_Mastermind_Console_Game
             Console.WriteLine("COMP 1003 Mastermind");
             Console.WriteLine("Please Set Up Your Game");
             gp.SetUpGame();
-            hs.HistorySetUp(gp.Positions);
+            hs.HistorySetUp();
             pg.SetUpPlayerGuess(gp.Positions);
 
         }
